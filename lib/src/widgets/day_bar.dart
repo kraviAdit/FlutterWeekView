@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_week_view/flutter_week_view.dart';
 import 'package:flutter_week_view/src/styles/day_bar.dart';
-import 'package:flutter_week_view/src/utils/utils.dart';
 import 'package:flutter_week_view/src/widgets/zoomable_header_widget.dart';
 
 /// A bar which is showing a day.
 class DayBar extends StatelessWidget {
   /// The date.
-  final DateTime date;
+  final Header date;
 
   /// The widget style.
   final DayBarStyle style;
@@ -22,24 +22,20 @@ class DayBar extends StatelessWidget {
 
   /// Creates a new day bar instance.
   DayBar({
-    Key? key,
-    required DateTime date,
+    required Header date,
     required this.style,
     this.height,
     this.width,
     this.onDayBarTappedDown,
-  })  : date = date.yearMonthDay,
-        super(key: key);
+  }) : date = date;
 
   /// Creates a new day bar instance from a headers widget instance.
   DayBar.fromHeadersWidgetState({
-    Key? key,
     required ZoomableHeadersWidget parent,
-    required DateTime date,
+    required Header date,
     required DayBarStyle style,
     double? width,
   }) : this(
-          key: key,
           date: date,
           style: style,
           height: parent.style.headerSize,
@@ -57,7 +53,7 @@ class DayBar extends StatelessWidget {
           decoration: style.decoration,
           alignment: style.textAlignment,
           child: Text(
-            style.dateFormatter(date.year, date.month, date.day),
+            date.title,
             style: style.textStyle,
           ),
         ),

@@ -1,39 +1,66 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_week_view/flutter_week_view.dart';
 import 'package:flutter_week_view/src/event.dart';
 import 'package:flutter_week_view/src/styles/day_bar.dart';
 import 'package:flutter_week_view/src/styles/day_view.dart';
-import 'package:flutter_week_view/src/styles/hours_column.dart';
 import 'package:flutter_week_view/src/utils/hour_minute.dart';
 import 'package:flutter_week_view/src/utils/utils.dart';
 import 'package:flutter_week_view/src/widgets/day_view.dart';
 import 'package:flutter_week_view/src/widgets/zoomable_header_widget.dart';
+import 'package:intl/intl.dart' as Intl;
 
 /// Contains default builders and formatters.
 class DefaultBuilders {
   /// Formats a day in YYYY-MM-DD format, e.g., 2020-01-15.
-  static String defaultDateFormatter(int year, int month, int day) => '$year-${Utils.addLeadingZero(month)}-${Utils.addLeadingZero(day)}';
+  static String defaultDateFormatter(int year, int month, int day) =>
+      year.toString() +
+      '-' +
+      Utils.addLeadingZero(month) +
+      '-' +
+      Utils.addLeadingZero(day);
 
   /// Formats a hour in 24-hour HH:MM format, e.g., 15:00.
-  static String defaultTimeFormatter(HourMinute time) => '${Utils.addLeadingZero(time.hour)}:${Utils.addLeadingZero(time.minute)}';
+  static String defaultTimeFormatter(HourMinute time) => convertDateTime(time);
+
+  // "${((time.hour - 1) % 12) + 1} ${time.hour ~/ 12 == 0 ? "am" : "pm"}"
+  /*Utils.addLeadingZero(time.hour) + ':' + Utils.addLeadingZero(time.minute);*/
+
+  static String convertDateTime(HourMinute time) {
+    print(time);
+    DateTime tempDate = Intl.DateFormat("HH:mm")
+        .parse(time.hour.toString() + ":" + time.minute.toString());
+    var dateFormat =
+        Intl.DateFormat("hh:mm a"); // you can change the format here
+    print(dateFormat.format(tempDate));
+
+    return dateFormat.format(tempDate);
+  }
 
   /// Allows to calculate a top offset according to the specified hour row height.
-  static double defaultTopOffsetCalculator(HourMinute time, {HourMinute minimumTime = HourMinute.min, double hourRowHeight = 60}) {
+  static double defaultTopOffsetCalculator(HourMinute time,
+      {HourMinute minimumTime = HourMinute.MIN, double hourRowHeight = 60}) {
     HourMinute relative = time.subtract(minimumTime);
     return (relative.hour + (relative.minute / 60)) * hourRowHeight;
   }
 
-  /// Builds an event text widget in order to put it in an event widget.
-  static Widget defaultEventTextBuilder(FlutterWeekViewEvent event, BuildContext context, DayView dayView, double height, double width) {
+  /// Builds an event text widget in order to put it in a week view.
+  static Widget defaultEventTextBuilder(FlutterWeekViewEvent event,
+      BuildContext context, DayView dayView, double height, double width) {
     List<TextSpan> text = [
       TextSpan(
         text: event.title,
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       TextSpan(
-        text:
-            ' ${dayView.hoursColumnStyle.timeFormatter(HourMinute.fromDateTime(dateTime: event.start))} - ${dayView.hoursColumnStyle.timeFormatter(HourMinute.fromDateTime(dateTime: event.end))}\n\n',
+        text: ' ' +
+            dayView.hoursColumnStyle
+                .timeFormatter(HourMinute.fromDateTime(dateTime: event.start)) +
+            ' - ' +
+            dayView.hoursColumnStyle
+                .timeFormatter(HourMinute.fromDateTime(dateTime: event.end)) +
+            '\n\n',
       ),
       TextSpan(
         text: event.description,
@@ -64,19 +91,26 @@ class DefaultBuilders {
   }
 
   /// Builds a date according to a list.
-  static DateTime defaultDateCreator(List<DateTime> dates, int index) => dates[index];
+  static Header defaultDateCreator(List<Header> dates, int index) =>
+      dates[index];
 
   /// Builds the current time indicator builder.
-  static Widget defaultCurrentTimeIndicatorBuilder(DayViewStyle dayViewStyle, TopOffsetCalculator topOffsetCalculator, double hoursColumnWidth, bool isRtl) {
+  static Widget defaultCurrentTimeIndicatorBuilder(
+      DayViewStyle dayViewStyle,
+      TopOffsetCalculator topOffsetCalculator,
+      double hoursColumnWidth,
+      bool isRtl) {
     List<Widget> children = [
-      if (dayViewStyle.currentTimeRuleHeight > 0 && dayViewStyle.currentTimeRuleColor != null)
+      if (dayViewStyle.currentTimeRuleHeight > 0 &&
+          dayViewStyle.currentTimeRuleColor != null)
         Expanded(
           child: Container(
             height: dayViewStyle.currentTimeRuleHeight,
             color: dayViewStyle.currentTimeRuleColor,
           ),
         ),
-      if (dayViewStyle.currentTimeCircleRadius > 0 && dayViewStyle.currentTimeCircleColor != null)
+      if (dayViewStyle.currentTimeCircleRadius > 0 &&
+          dayViewStyle.currentTimeCircleColor != null)
         Container(
           height: dayViewStyle.currentTimeCircleRadius * 2,
           width: dayViewStyle.currentTimeCircleRadius * 2,
@@ -87,17 +121,13 @@ class DefaultBuilders {
         ),
     ];
 
-    final timeIndicatorHight = math.max(
-      dayViewStyle.currentTimeRuleHeight,
-      dayViewStyle.currentTimeCircleRadius * 2,
-    );
-
-    if (dayViewStyle.currentTimeCirclePosition == CurrentTimeCirclePosition.left) {
+    if (dayViewStyle.currentTimeCirclePosition ==
+        CurrentTimeCirclePosition.left) {
       children = children.reversed.toList();
     }
 
     return Positioned(
-      top: topOffsetCalculator(HourMinute.now()) - timeIndicatorHight / 2,
+      top: topOffsetCalculator(HourMinute.now()),
       left: isRtl ? 0 : hoursColumnWidth,
       right: isRtl ? hoursColumnWidth : 0,
       child: Row(children: children),
@@ -105,7 +135,8 @@ class DefaultBuilders {
   }
 
   /// Builds the time displayed on the side border.
-  static Widget defaultHoursColumnTimeBuilder(HoursColumnStyle hoursColumnStyle, HourMinute time) {
+  static Widget defaultHoursColumnTimeBuilder(
+      HoursColumnStyle hoursColumnStyle, HourMinute time) {
     return Text(
       hoursColumnStyle.timeFormatter(time),
       style: hoursColumnStyle.textStyle,
@@ -113,13 +144,16 @@ class DefaultBuilders {
   }
 
   /// The default day view style builder.
-  static DayViewStyle defaultDayViewStyleBuilder(DateTime date) => DayViewStyle.fromDate(date: date);
+  static DayViewStyle defaultDayViewStyleBuilder(DateTime date) =>
+      DayViewStyle.fromDate(date: date);
 
   /// The default day view style builder.
-  static DayBarStyle defaultDayBarStyleBuilder(DateTime date) => DayBarStyle.fromDate(date: date);
+  static DayBarStyle defaultDayBarStyleBuilder(DateTime date) =>
+      DayBarStyle.fromDate(date: date);
 
   /// Returns whether this input exceeds the specified height.
-  static bool? _exceedHeight(List<TextSpan> input, TextStyle? textStyle, double height, double width) {
+  static bool? _exceedHeight(
+      List<TextSpan> input, TextStyle? textStyle, double height, double width) {
     double fontSize = textStyle?.fontSize ?? 14;
     int maxLines = height ~/ ((textStyle?.height ?? 1.2) * fontSize);
     if (maxLines == 0) {
@@ -160,7 +194,9 @@ class DefaultBuilders {
       truncatedText = text.substring(0, text.length - 1) + ellipse;
     } else {
       truncatedText = Utils.removeLastWord(text);
-      truncatedText = truncatedText.substring(0, math.max(0, truncatedText.length - 2)) + ellipse;
+      truncatedText =
+          truncatedText.substring(0, math.max(0, truncatedText.length - 2)) +
+              ellipse;
     }
 
     input[input.length - 1] = TextSpan(

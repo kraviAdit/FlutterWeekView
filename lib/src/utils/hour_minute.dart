@@ -6,13 +6,13 @@ import 'package:flutter_week_view/src/utils/utils.dart';
 /// This is not a duration but more of an instant in the current day.
 class HourMinute {
   /// "Zero" time.
-  static const HourMinute zero = HourMinute._internal(hour: 0, minute: 0);
+  static const HourMinute ZERO = HourMinute._internal(hour: 0, minute: 0);
 
   /// "Min" time.
-  static const HourMinute min = zero;
+  static const HourMinute MIN = ZERO;
 
   /// "Max" time.
-  static const HourMinute max = HourMinute._internal(hour: 24, minute: 0);
+  static const HourMinute MAX = HourMinute._internal(hour: 24, minute: 0);
 
   /// The current hour.
   final int hour;
@@ -71,12 +71,12 @@ class HourMinute {
   HourMinute subtract(HourMinute other) {
     int hour = this.hour - other.hour;
     if (hour < 0) {
-      return HourMinute.zero;
+      return HourMinute.ZERO;
     }
     int minute = this.minute - other.minute;
     while (minute < 0) {
       if (hour == 0) {
-        return HourMinute.zero;
+        return HourMinute.ZERO;
       }
       hour--;
       minute += 60;
@@ -92,7 +92,8 @@ class HourMinute {
     if (other is! HourMinute) {
       return false;
     }
-    return identical(this, other) || (hour == other.hour && minute == other.minute);
+    return identical(this, other) ||
+        (hour == other.hour && minute == other.minute);
   }
 
   bool operator <(other) {
@@ -134,5 +135,6 @@ class HourMinute {
   int get hashCode => hour.hashCode + minute.hashCode;
 
   /// Returns the difference in minutes between this and another hour minute time instance.
-  int _calculateDifference(HourMinute other) => (hour * 60 - other.hour * 60) + (minute - other.minute);
+  int _calculateDifference(HourMinute other) =>
+      (hour * 60 - other.hour * 60) + (minute - other.minute);
 }
