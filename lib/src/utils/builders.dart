@@ -15,11 +15,7 @@ import 'package:intl/intl.dart' as Intl;
 class DefaultBuilders {
   /// Formats a day in YYYY-MM-DD format, e.g., 2020-01-15.
   static String defaultDateFormatter(int year, int month, int day) =>
-      year.toString() +
-      '-' +
-      Utils.addLeadingZero(month) +
-      '-' +
-      Utils.addLeadingZero(day);
+      '$year-${Utils.addLeadingZero(month)}-${Utils.addLeadingZero(day)}';
 
   /// Formats a hour in 24-hour HH:MM format, e.g., 15:00.
   static String defaultTimeFormatter(HourMinute time) => convertDateTime(time);
@@ -28,12 +24,10 @@ class DefaultBuilders {
   /*Utils.addLeadingZero(time.hour) + ':' + Utils.addLeadingZero(time.minute);*/
 
   static String convertDateTime(HourMinute time) {
-    print(time);
-    DateTime tempDate = Intl.DateFormat("HH:mm")
-        .parse(time.hour.toString() + ":" + time.minute.toString());
+    DateTime tempDate =
+        Intl.DateFormat('HH:mm').parse('${time.hour}:${time.minute}');
     var dateFormat =
-        Intl.DateFormat("hh:mm a"); // you can change the format here
-    print(dateFormat.format(tempDate));
+        Intl.DateFormat('hh:mm a'); // you can change the format here
 
     return dateFormat.format(tempDate);
   }
@@ -54,13 +48,8 @@ class DefaultBuilders {
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       TextSpan(
-        text: ' ' +
-            dayView.hoursColumnStyle
-                .timeFormatter(HourMinute.fromDateTime(dateTime: event.start)) +
-            ' - ' +
-            dayView.hoursColumnStyle
-                .timeFormatter(HourMinute.fromDateTime(dateTime: event.end)) +
-            '\n\n',
+        text:
+            ' ${dayView.hoursColumnStyle.timeFormatter(HourMinute.fromDateTime(dateTime: event.start))} - ${dayView.hoursColumnStyle.timeFormatter(HourMinute.fromDateTime(dateTime: event.end))}\n\n',
       ),
       TextSpan(
         text: event.description,
