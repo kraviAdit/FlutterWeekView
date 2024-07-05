@@ -39,7 +39,7 @@ class HoursColumnStyle {
         width = (width ?? 60) < 0 ? 0 : (width ?? 60),
         color = color ?? Colors.white,
         textAlignment = textAlignment ?? Alignment.center,
-        interval = interval ?? const Duration(hours: 1);
+        interval = interval ?? const Duration(minutes: 30);
 
   /// Allows to copy the current style instance with your own properties.
   HoursColumnStyle copyWith({
