@@ -6,7 +6,8 @@ import 'package:flutter_week_view/src/utils/utils.dart';
 import 'package:flutter_week_view/src/widgets/day_view.dart';
 
 /// Builds an event text widget.
-typedef EventTextBuilder = Widget Function(FlutterWeekViewEvent event, BuildContext context, DayView dayView, double height, double width);
+typedef EventTextBuilder = Widget Function(FlutterWeekViewEvent event,
+    BuildContext context, DayView dayView, double height, double width);
 
 /// Represents a flutter week view event.
 class FlutterWeekViewEvent extends Comparable<FlutterWeekViewEvent> {
@@ -46,25 +47,29 @@ class FlutterWeekViewEvent extends Comparable<FlutterWeekViewEvent> {
   /// The event text builder.
   final EventTextBuilder? eventTextBuilder;
 
+  final EdgeInsets? blockMargin;
+
   /// Creates a new flutter week view event instance.
-  FlutterWeekViewEvent({
-    required this.title,
-    required this.description,
-    required DateTime start,
-    required DateTime end,
-    this.backgroundColor = const Color(0xCC2196F3),
-    this.decoration,
-    this.textStyle = const TextStyle(color: Colors.white),
-    this.padding = const EdgeInsets.all(10),
-    this.margin,
-    this.onTap,
-    this.onLongPress,
-    this.eventTextBuilder,
-  })  : start = start.yearMonthDayHourMinute,
+  FlutterWeekViewEvent(
+      {required this.title,
+      required this.description,
+      required DateTime start,
+      required DateTime end,
+      this.backgroundColor = const Color(0xCC2196F3),
+      this.decoration,
+      this.textStyle = const TextStyle(color: Colors.white),
+      this.padding = const EdgeInsets.all(10),
+      this.margin,
+      this.onTap,
+      this.onLongPress,
+      this.eventTextBuilder,
+      this.blockMargin = const  EdgeInsets.all(1)})
+      : start = start.yearMonthDayHourMinute,
         end = end.yearMonthDayHourMinute;
 
   /// Builds the event widget.
-  Widget build(BuildContext context, DayView dayView, double height, double width) {
+  Widget build(
+      BuildContext context, DayView dayView, double height, double width) {
     height = height - (padding?.top ?? 0.0) - (padding?.bottom ?? 0.0);
     width = width - (padding?.left ?? 0.0) - (padding?.right ?? 0.0);
 
@@ -73,17 +78,24 @@ class FlutterWeekViewEvent extends Comparable<FlutterWeekViewEvent> {
       child: InkWell(
         onTap: onTap,
         onLongPress: onLongPress,
-        child: Ink(
-          decoration: decoration ?? (backgroundColor != null ? BoxDecoration(color: backgroundColor) : null),
-          child: Container(
-            margin: margin,
-            padding: padding,
-            child: (eventTextBuilder ?? DefaultBuilders.defaultEventTextBuilder)(
-              this,
-              context,
-              dayView,
-              math.max(0.0, height),
-              math.max(0.0, width),
+        child: Container(
+          margin: blockMargin,
+          child: Ink(
+            decoration: decoration ??
+                (backgroundColor != null
+                    ? BoxDecoration(color: backgroundColor)
+                    : null),
+            child: Container(
+              margin: margin,
+              padding: padding,
+              child:
+                  (eventTextBuilder ?? DefaultBuilders.defaultEventTextBuilder)(
+                this,
+                context,
+                dayView,
+                math.max(0.0, height),
+                math.max(0.0, width),
+              ),
             ),
           ),
         ),

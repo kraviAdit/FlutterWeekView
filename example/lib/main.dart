@@ -111,6 +111,7 @@ class _DemoWeekView extends StatelessWidget {
       //    style: WeekViewStyle(dayViewWidth: 120),
       events: [
         FlutterWeekViewEvent(
+          blockMargin: EdgeInsets.all(2),
           decoration: const BoxDecoration(
             borderRadius: BorderRadius.all(
               Radius.circular(
