@@ -77,6 +77,9 @@ class FlutterWeekViewEvent extends Comparable<FlutterWeekViewEvent> {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        hoverColor: Colors.transparent,
         onLongPress: onLongPress,
         child: Container(
           margin: blockMargin,
